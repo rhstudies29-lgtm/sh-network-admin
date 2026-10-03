@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- SweetAlert2 for Premium Popups -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -23,6 +26,8 @@
         .modal-enter { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
+        .swal2-title, .swal2-html-container { font-family: 'Hind Siliguri', sans-serif !important; }
+
         /* Receipt Template CSS */
         #receipt-template {
             width: 210mm; height: 125mm; padding: 25px; background: white; color: black; font-family: 'Hind Siliguri', sans-serif;
@@ -37,11 +42,20 @@
 <body class="flex flex-col h-screen">
 
     <!-- App Lock Screen -->
-    <div id="app-lock-screen" class="fixed inset-0 bg-red-900/95 z-[9999] hidden flex-col justify-center items-center px-6 backdrop-blur-md">
-        <i class="fas fa-lock text-6xl text-white mb-4 animate-bounce"></i>
-        <h2 class="text-3xl font-black text-white mb-2 text-center">অ্যাপ লক!</h2>
-        <p class="text-white/80 text-center mb-6">আপনার মেয়াদ শেষ। ফি পরিশোধ করুন।</p>
-        <button onclick="openSettingsModal()" class="bg-green-500 text-white font-bold py-3 px-8 rounded-full shadow-2xl transition transform hover:scale-105"><i class="fas fa-money-bill-wave"></i> পেমেন্ট করুন</button>
+    <div id="app-lock-screen" class="fixed inset-0 bg-gray-900/95 z-[9999] hidden flex-col justify-center items-center px-6 backdrop-blur-md">
+        <div class="bg-red-500/20 p-5 rounded-full mb-4">
+            <i class="fas fa-lock text-6xl text-red-500 animate-pulse"></i>
+        </div>
+        <h2 class="text-3xl font-black text-white mb-2 text-center">অ্যাপ লক হয়ে গেছে!</h2>
+        <p class="text-gray-300 text-center mb-6 text-sm">আপনার সাবস্ক্রিপশন মেয়াদ শেষ। অ্যাপটি পুনরায় সচল করতে নিচের নাম্বারে ফি পরিশোধ করুন।</p>
+        
+        <div class="bg-white/10 p-6 rounded-2xl border border-white/20 text-center mb-8 w-full max-w-sm shadow-xl">
+            <p class="text-gray-300 text-xs font-bold mb-1">ফি পাঠানোর নাম্বার (বিকাশ/ন নগদ):</p>
+            <p class="text-4xl font-black text-yellow-400 tracking-widest mb-1 shadow-sm">01644234178</p>
+            <p class="text-gray-400 text-[10px] uppercase tracking-widest">পার্সোনাল একাউন্ট</p>
+        </div>
+
+        <button onclick="openSettingsModal()" class="bg-green-500 text-white font-bold py-3.5 px-8 rounded-full shadow-2xl transition transform hover:scale-105 w-full max-w-sm"><i class="fas fa-paper-plane mr-2"></i> পেমেন্ট তথ্য সাবমিট করুন</button>
     </div>
 
     <!-- Header -->
@@ -63,7 +77,7 @@
 
     <!-- Expiry Warning -->
     <div id="expiry-warning" class="bg-red-500 text-white text-xs font-bold p-2 text-center shadow-md hidden animate-pulse">
-        আপনার সাবস্ক্রিপশন মেয়াদ আর মাত্র <span id="days-left"></span> দিন আছে!
+        আপনার সাবস্ক্রিপশন মেয়াদ আর মাত্র <span id="days-left"></span> দিন আছে! দ্রুত ফি প্রদান করুন।
     </div>
 
     <!-- Main Content -->
@@ -115,7 +129,11 @@
                 <button onclick="toggleComplaints('pending')" id="btn-comp-pending" class="flex-1 bg-white text-red-600 shadow-sm py-2.5 rounded-xl font-bold text-sm transition">পেন্ডিং</button>
                 <button onclick="toggleComplaints('resolved')" id="btn-comp-resolved" class="flex-1 text-gray-600 py-2.5 rounded-xl font-bold text-sm transition">সমাধানকৃত</button>
             </div>
+            
+            <!-- Pending Complaints -->
             <div class="grid grid-cols-1 gap-3 overflow-y-auto pb-4 smooth-scroll" id="complaints-container"></div>
+            
+            <!-- Resolved Complaints -->
             <div class="grid grid-cols-1 gap-3 overflow-y-auto pb-4 smooth-scroll hidden" id="resolved-complaints-container"></div>
         </div>
     </main>
@@ -167,7 +185,7 @@
                 <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
                     <h4 class="font-bold text-gray-700 text-sm mb-3"><i class="fas fa-tools text-amber-500 mr-1"></i> নির্মাতাকে মেসেজ দিন</h4>
                     <textarea id="dev-msg-input" rows="3" placeholder="সমস্যা বা মতামত লিখুন..." class="w-full p-3 border border-gray-200 rounded-xl mb-3 text-sm bg-gray-50 resize-none outline-none focus:border-amber-400"></textarea>
-                    <button onclick="sendDevMessage()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-xl font-bold shadow-md transition">মেসেজ পাঠান</button>
+                    <button onclick="sendDevMessage()" class="w-full bg-amber-50 hover:bg-amber-500 hover:text-white text-amber-600 border border-amber-200 py-3 rounded-xl font-bold shadow-sm transition">মেসেজ পাঠান</button>
                 </div>
             </div>
         </div>
@@ -220,7 +238,6 @@
     <div id="pdf-wrapper" class="hidden">
         <div id="receipt-template">
             <p style="text-align: center; font-size: 13px; margin: 0 0 5px 0; font-weight: bold;">বিসমিল্লাহির রাহমানির রাহিম</p>
-            
             <div class="rcpt-header">
                 <i class="fas fa-satellite-dish" style="font-size: 40px;"></i>
                 <div>
@@ -228,32 +245,25 @@
                     <p style="margin: 4px 0 0 0; font-size: 14px;">উত্তর কেরোয়া, নয়ারহাট, জোড়পুল, রায়পুর, লক্ষ্মীপুর ।</p>
                 </div>
             </div>
-            
             <p style="text-align: center; font-size: 16px; font-weight: bold; margin: 10px 0 15px 0;">
                 মোবাইল : 01741253292, বিকাশ পেমেন্ট: 01315273777
             </p>
-            
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div style="font-weight:bold; font-size:16px;">নং- <span id="r-id" style="text-decoration:underline; padding:0 5px;"></span></div>
                 <div style="background: #1e3a8a; color: white; padding: 5px 20px; border-radius: 20px; font-weight: bold; font-size: 16px;">মাসিক বিল আদায়ের রশিদ</div>
                 <div style="font-weight:bold; font-size:16px;">তারিখ : <span id="r-date" style="border-bottom:1px dashed #000; padding:0 15px;"></span></div>
             </div>
-
-            <!-- Content Area (Full width) -->
             <div style="padding: 10px 20px;">
                 <div class="rcpt-row"><span class="rcpt-label">নাম</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-name" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">ইউজার আইডি</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-userid" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">ঠিকানা</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-address" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">টাকা পরিমান</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-amount" class="rcpt-line"></span><span style="font-weight:bold; font-size:16px; margin-left:10px;">টাকা</span></div>
             </div>
-
-            <!-- Dynamic Thank You Note -->
-            <div style="margin-top: 15px; text-align: center;">
-                <p id="r-thank-you" style="font-size: 18px; font-weight: bold; color: #1e3a8a;"></p>
+            <div style="margin-top: 25px; text-align: center;">
+                <p id="r-thank-you" style="font-size: 17px; font-weight: bold; color: #1e3a8a;"></p>
             </div>
-
             <div style="position: absolute; bottom: 25px; right: 25px;">
-                <p style="border-top: 1px solid #000; padding-top: 5px; font-size: 15px; font-weight:bold;">আদায়কারীর স্বাক্ষর</p>
+                <p style="border-top: 1px dashed #000; padding-top: 5px; font-size: 15px; font-weight:bold; width: 150px; text-align: center;">আদায়কারীর স্বাক্ষর</p>
             </div>
         </div>
     </div>
@@ -281,26 +291,33 @@
             db.ref('admin_subscription').on('value', snap => {
                 let now = new Date().getTime(); let expiryTime = snap.exists() ? snap.val().expiresAt : now + (30*24*60*60*1000);
                 if(!snap.exists()) db.ref('admin_subscription').set({ expiresAt: expiryTime, status: 'active' });
-                document.getElementById('sub-expiry-date').innerText = new Date(expiryTime).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+                
+                let expDateObj = new Date(expiryTime);
+                document.getElementById('sub-expiry-date').innerText = expDateObj.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+                
                 let daysLeft = Math.ceil((expiryTime - now) / (1000 * 60 * 60 * 24));
-                if (daysLeft <= 0) { isAppLocked = true; document.getElementById('app-lock-screen').classList.replace('hidden', 'flex'); } 
-                else {
+                if (daysLeft <= 0) { 
+                    isAppLocked = true; document.getElementById('app-lock-screen').classList.replace('hidden', 'flex'); 
+                } else {
                     isAppLocked = false; document.getElementById('app-lock-screen').classList.replace('flex', 'hidden');
                     let w = document.getElementById('expiry-warning');
-                    if (daysLeft <= 3) { document.getElementById('days-left').innerText = daysLeft; w.classList.remove('hidden'); } else { w.classList.add('hidden'); }
+                    if (daysLeft <= 3 && daysLeft > 0) { 
+                        document.getElementById('days-left').innerText = daysLeft; w.classList.remove('hidden'); 
+                    } else { w.classList.add('hidden'); }
                 }
             });
         }
 
         function openSettingsModal() { document.getElementById('settings-modal').classList.replace('hidden', 'flex'); }
         function closeSettingsModal() { 
-            if(isAppLocked) return alert("অ্যাপটি লক অবস্থায় আছে। ফি পরিশোধ করুন।");
+            if(isAppLocked) return Swal.fire({ icon: 'warning', title: 'লক', text: 'অ্যাপটি লক অবস্থায় আছে। ফি পরিশোধ করুন।' });
             document.getElementById('settings-modal').classList.replace('flex', 'hidden'); 
         }
         function toggleInbox() {
             let box = document.getElementById('dev-inbox-box'); box.classList.toggle('hidden');
             if(!box.classList.contains('hidden')) loadDevInbox();
         }
+        
         function loadDevInbox() {
             db.ref('dev_messages').on('value', snap => {
                 let list = document.getElementById('dev-messages-list'); list.innerHTML = '';
@@ -309,7 +326,7 @@
                         let msg = child.val();
                         if(msg.sender !== 'WiFi_Admin') {
                             list.innerHTML = `<div class="bg-white p-3 rounded-xl border border-indigo-100 mb-2 relative shadow-sm">
-                                <button onclick="db.ref('dev_messages/${child.key}').remove()" class="absolute top-2 right-2 text-red-400 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
+                                <button onclick="deleteDevMessage('${child.key}')" class="absolute top-2 right-2 text-red-400 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
                                 <p class="text-[10px] text-gray-500 mb-1"><i class="far fa-clock"></i> ${msg.date}</p><p class="text-sm font-bold text-gray-800">${msg.message}</p>
                             </div>` + list.innerHTML;
                         }
@@ -317,16 +334,29 @@
                 }
             });
         }
+        
+        function deleteDevMessage(key) {
+            Swal.fire({
+                title: 'মুছতে চান?', icon: 'warning', showCancelButton: true, confirmButtonText: 'হ্যাঁ', cancelButtonText: 'না'
+            }).then((result) => {
+                if (result.isConfirmed) db.ref('dev_messages/' + key).remove();
+            });
+        }
+
         function submitDevPayment() {
             let mth = document.getElementById('dev-pay-months').value; let snd = document.getElementById('dev-pay-sender').value; let trx = document.getElementById('dev-pay-trx').value;
-            if(!mth || !snd || !trx) return alert("সব তথ্য দিন!");
-            db.ref('dev_payments').push({ method: document.getElementById('dev-pay-method').value, months: mth, sender: snd, trxId: trx, date: new Date().toLocaleDateString('bn-BD') })
-            .then(() => { alert("পেমেন্ট তথ্য পাঠানো হয়েছে।"); document.getElementById('dev-payment-form').classList.add('hidden'); });
+            if(!mth || !snd || !trx) return Swal.fire({ icon: 'warning', text: 'সব তথ্য দিন!' });
+            
+            db.ref('dev_payments').push({ method: document.getElementById('dev-pay-method').value, months: mth, sender: snd, trxId: trx, date: new Date().toLocaleDateString('bn-BD'), status: 'pending' })
+            .then(() => { 
+                Swal.fire('সফল', 'পেমেন্ট তথ্য পাঠানো হয়েছে।', 'success'); 
+                document.getElementById('dev-payment-form').classList.add('hidden'); 
+            });
         }
         function sendDevMessage() {
-            let msg = document.getElementById('dev-msg-input').value.trim(); if(!msg) return alert("মেসেজ লিখুন!");
+            let msg = document.getElementById('dev-msg-input').value.trim(); if(!msg) return Swal.fire({ icon: 'warning', text: 'মেসেজ লিখুন!' });
             db.ref('dev_messages').push({ message: msg, date: new Date().toLocaleString('bn-BD'), sender: 'WiFi_Admin' })
-            .then(() => { alert("মেসেজ পাঠানো হয়েছে!"); document.getElementById('dev-msg-input').value=''; });
+            .then(() => { Swal.fire('সফল', 'মেসেজ পাঠানো হয়েছে!', 'success'); document.getElementById('dev-msg-input').value=''; });
         }
 
         function switchTab(tabId, btnElement) {
@@ -335,8 +365,12 @@
             btnElement.classList.replace('nav-inactive', 'nav-active');
             if(tabId === 'tab-add') generateAutoId();
         }
+        
         function generateAutoId() { document.getElementById('new-c-id').value = "SH-" + Math.floor(1000 + Math.random() * 9000); }
-        function updateNotice() { db.ref('settings/owner_notice').set(document.getElementById('admin-notice-input').value).then(()=>alert("নোটিশ আপডেট হয়েছে!")); }
+        
+        function updateNotice() { 
+            db.ref('settings/owner_notice').set(document.getElementById('admin-notice-input').value).then(()=> Swal.fire('সফল', 'নোটিশ আপডেট হয়েছে!', 'success')); 
+        }
         function loadDashboardData() { db.ref('users').on('value', snap => document.getElementById('stat-customers').innerText = snap.numChildren() || 0); }
 
         function saveCustomer() {
@@ -344,15 +378,22 @@
             let mobile = document.getElementById('new-c-mobile').value.trim(); let address = document.getElementById('new-c-address').value.trim(); let bill = document.getElementById('new-c-bill').value.trim();
 
             if(!name) {
-                if(confirm("ডেমো গ্রাহক তৈরি করতে চান?")) {
-                    let d = new Date(); d.setMonth(d.getMonth() - 2); 
-                    let demoId = "SH-" + Math.floor(1000 + Math.random() * 9000);
-                    db.ref('users/' + demoId).set({ userId: demoId, name: "ডেমো গ্রাহক (টেস্ট)", mobile: "01700000000", address: "ডেমো ঠিকানা", monthly_bill: "500", createdAtTS: d.getTime() })
-                    .then(() => { alert("ডেমো তৈরি হয়েছে!"); switchTab('tab-list', document.querySelectorAll('.nav-btn')[2]); });
-                } return;
+                Swal.fire({
+                    title: 'ডেমো গ্রাহক?', text: "ফর্ম ফাঁকা রেখেছেন। টেস্ট করার জন্য ডেমো গ্রাহক তৈরি করতে চান?", icon: 'question',
+                    showCancelButton: true, confirmButtonText: 'হ্যাঁ', cancelButtonText: 'না'
+                }).then((res) => {
+                    if(res.isConfirmed){
+                        let d = new Date(); d.setMonth(d.getMonth() - 2); 
+                        let demoId = "SH-" + Math.floor(1000 + Math.random() * 9000);
+                        db.ref('users/' + demoId).set({ userId: demoId, name: "ডেমো গ্রাহক (টেস্ট)", mobile: "01700000000", address: "ডেমো ঠিকানা", monthly_bill: "500", createdAtTS: d.getTime() })
+                        .then(() => { Swal.fire('সফল', 'ডেমো তৈরি হয়েছে!', 'success'); switchTab('tab-list', document.querySelectorAll('.nav-btn')[2]); });
+                    }
+                });
+                return;
             }
+            
             db.ref('users/' + id).set({ userId: id, name: name, mobile: mobile, address: address, monthly_bill: bill, createdAtTS: new Date().getTime() })
-            .then(() => { alert("গ্রাহক যুক্ত হয়েছে!"); document.getElementById('new-c-name').value=''; generateAutoId(); switchTab('tab-list', document.querySelectorAll('.nav-btn')[2]);});
+            .then(() => { Swal.fire('সফল', 'গ্রাহক যুক্ত হয়েছে!', 'success'); document.getElementById('new-c-name').value=''; generateAutoId(); switchTab('tab-list', document.querySelectorAll('.nav-btn')[2]);});
         }
 
         function loadCustomers() {
@@ -369,6 +410,7 @@
                 }
             });
         }
+        
         function searchCustomer() {
             let filter = document.getElementById('search-box').value.toUpperCase();
             document.querySelectorAll('.user-card').forEach(card => {
@@ -388,8 +430,18 @@
             loadCustomerHistory(uid); document.getElementById('customer-action-modal').classList.replace('hidden', 'flex');
         }
         function closeCustomerModal() { document.getElementById('customer-action-modal').classList.replace('flex', 'hidden'); }
+        
         function deleteCustomer() {
-            if(confirm("গ্রাহককে মুছতে চান?")) { db.ref('users/'+currentActiveUserId).remove(); db.ref('payments/'+currentActiveUserId).remove(); closeCustomerModal(); }
+            Swal.fire({
+                title: 'নিশ্চিত?', text: "গ্রাহককে মুছে ফেলতে চান?", icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'হ্যাঁ, মুছুন', cancelButtonText: 'না'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    db.ref('users/'+currentActiveUserId).remove(); db.ref('payments/'+currentActiveUserId).remove(); 
+                    closeCustomerModal();
+                    Swal.fire('সফল', 'গ্রাহককে মুছে ফেলা হয়েছে।', 'success');
+                }
+            });
         }
 
         function getDueMonthsList(regTS, paidSet) {
@@ -407,11 +459,13 @@
         function submitBill() {
             let u = usersMap[currentActiveUserId]; let m = document.getElementById('pay-month').value + " " + document.getElementById('pay-year').value;
             let a = document.getElementById('pay-amount').value; let r = currentAutoReceiptNo; let d = new Date().toLocaleDateString('bn-BD');
-            if(!a) return alert('টাকা দিন!');
+            if(!a) return Swal.fire({ icon: 'warning', text: 'টাকা দিন!' });
+            
             db.ref('payments/' + u.userId + '/' + r).set({ receiptNo: r, amount: a, month: m, date: d, status: 'paid' })
             .then(() => { 
                 db.ref('receipt_counter').set(r + 1); 
-                downloadPDF(r, d, m, a, u.name, u.userId, u.address); alert("বিল জমা হয়েছে!"); 
+                downloadPDF(r, d, m, a, u.name, u.userId, u.address); 
+                Swal.fire('সফল', 'বিল জমা হয়েছে!', 'success'); 
             });
         }
 
@@ -468,6 +522,7 @@
                 document.getElementById('complaints-container').classList.add('hidden'); document.getElementById('resolved-complaints-container').classList.remove('hidden');
             }
         }
+        
         function loadComplaints() {
             db.ref('complaints').orderByChild('status').equalTo('pending').on('value', snap => {
                 let cnt = document.getElementById('complaints-container'); cnt.innerHTML = ''; let c = snap.numChildren()||0;
@@ -476,9 +531,10 @@
                 if(snap.exists()) {
                     snap.forEach(ch => {
                         let comp = ch.val();
+                        let safeIssue = comp.issue || "সমস্যা উল্লেখ নেই";
                         cnt.innerHTML += `<div class="bg-red-50 border border-red-200 p-5 rounded-2xl relative mb-3 shadow-sm">
                             <span class="absolute top-4 right-4 bg-red-500 text-white text-[10px] px-2 py-1 rounded font-bold animate-pulse">পেন্ডিং</span>
-                            <p class="font-bold text-lg">${comp.name}</p><div class="bg-white p-3 rounded-xl border mt-3 text-sm font-semibold text-gray-700 shadow-inner">"${comp.issue}"</div>
+                            <p class="font-bold text-lg">${comp.name || 'অজ্ঞাত'}</p><div class="bg-white p-3 rounded-xl border mt-3 text-sm font-semibold text-gray-700 shadow-inner">"${safeIssue}"</div>
                             <textarea id="reply-${comp.ticketId}" placeholder="রিপ্লাই দিন..." class="w-full p-3 border rounded-xl mt-3 mb-3 resize-none text-sm outline-none focus:ring-1 focus:ring-red-400"></textarea>
                             <button onclick="resolveComplaint('${comp.ticketId}')" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold shadow-md transition">সমাধান করুন</button>
                         </div>`;
@@ -486,27 +542,36 @@
                 } else { cnt.innerHTML = `<p class="text-center text-gray-400 py-10 font-bold">নতুন কোনো অভিযোগ নেই</p>`; }
             });
         }
+        
         function resolveComplaint(id) {
             let rep = document.getElementById('reply-'+id).value.trim() || "কর্তৃপক্ষ সমস্যা সমাধান করেছেন।";
-            db.ref('complaints/'+id).update({ status: 'resolved', adminReply: rep }).then(() => alert("সমাধান করা হয়েছে!"));
+            // 72 Hour feature - Adding resolvedAt timestamp
+            db.ref('complaints/'+id).update({ status: 'resolved', adminReply: rep, resolvedAt: Date.now() }).then(() => Swal.fire('সফল', 'সমাধান করা হয়েছে!', 'success'));
         }
+        
         function deleteComplaint(ticketId) {
-            if(confirm("এই অভিযোগটি চিরতরে মুছে ফেলতে চান?")) {
-                db.ref('complaints/' + ticketId).remove();
-            }
+            Swal.fire({
+                title: 'নিশ্চিত?', text: "এই অভিযোগটি চিরতরে মুছে ফেলতে চান?", icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'হ্যাঁ, মুছুন', cancelButtonText: 'না'
+            }).then((result) => {
+                if (result.isConfirmed) db.ref('complaints/' + ticketId).remove().then(() => Swal.fire('সফল', 'অভিযোগটি মুছে ফেলা হয়েছে।', 'success'));
+            });
         }
+        
         function loadResolvedComplaints() {
             db.ref('complaints').orderByChild('status').equalTo('resolved').on('value', snap => {
                 let cnt = document.getElementById('resolved-complaints-container'); cnt.innerHTML = '';
                 if(snap.exists()) {
                     let comps = []; snap.forEach(ch => comps.push(ch.val())); comps.reverse();
                     comps.forEach(comp => {
+                        let safeName = comp.name || "অজ্ঞাত";
+                        let safeDate = comp.date || "";
                         let safeIssue = comp.issue || "সমস্যা উল্লেখ নেই";
                         let safeReply = comp.adminReply || "কর্তৃপক্ষ সমস্যা সমাধান করেছেন।";
                         cnt.innerHTML += `
                             <div class="bg-white border border-green-200 p-4 rounded-2xl shadow-sm mb-3 cursor-pointer hover:shadow-md transition" onclick="document.getElementById('res-det-${comp.ticketId}').classList.toggle('hidden')">
                                 <div class="flex justify-between items-center">
-                                    <div><p class="font-bold text-gray-800 text-lg">${comp.name}</p><p class="text-xs text-gray-500"><i class="far fa-clock"></i> ${comp.date || ''}</p></div>
+                                    <div><p class="font-bold text-gray-800 text-lg">${safeName}</p><p class="text-xs text-gray-500"><i class="far fa-clock"></i> ${safeDate}</p></div>
                                     <div class="bg-green-100 text-green-600 w-8 h-8 rounded-full flex justify-center items-center"><i class="fas fa-chevron-down"></i></div>
                                 </div>
                                 <div id="res-det-${comp.ticketId}" class="hidden mt-4 border-t border-gray-100 pt-4">
