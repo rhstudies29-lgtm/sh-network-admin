@@ -220,6 +220,7 @@
     <div id="pdf-wrapper" class="hidden">
         <div id="receipt-template">
             <p style="text-align: center; font-size: 13px; margin: 0 0 5px 0; font-weight: bold;">বিসমিল্লাহির রাহমানির রাহিম</p>
+            
             <div class="rcpt-header">
                 <i class="fas fa-satellite-dish" style="font-size: 40px;"></i>
                 <div>
@@ -227,6 +228,7 @@
                     <p style="margin: 4px 0 0 0; font-size: 14px;">উত্তর কেরোয়া, নয়ারহাট, জোড়পুল, রায়পুর, লক্ষ্মীপুর ।</p>
                 </div>
             </div>
+            
             <p style="text-align: center; font-size: 16px; font-weight: bold; margin: 10px 0 15px 0;">
                 মোবাইল : 01741253292, বিকাশ পেমেন্ট: 01315273777
             </p>
@@ -237,22 +239,21 @@
                 <div style="font-weight:bold; font-size:16px;">তারিখ : <span id="r-date" style="border-bottom:1px dashed #000; padding:0 15px;"></span></div>
             </div>
 
-            <!-- Content Area (Full width, no left table) -->
+            <!-- Content Area (Full width) -->
             <div style="padding: 10px 20px;">
                 <div class="rcpt-row"><span class="rcpt-label">নাম</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-name" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">ইউজার আইডি</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-userid" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">ঠিকানা</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-address" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">টাকা পরিমান</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-amount" class="rcpt-line"></span><span style="font-weight:bold; font-size:16px; margin-left:10px;">টাকা</span></div>
-                <div class="rcpt-row"><span class="rcpt-label">কথায়</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-words" class="rcpt-line"></span></div>
             </div>
 
             <!-- Dynamic Thank You Note -->
-            <div style="margin-top: 25px; text-align: center;">
-                <p id="r-thank-you" style="font-size: 17px; font-weight: bold; color: #1e3a8a;"></p>
+            <div style="margin-top: 15px; text-align: center;">
+                <p id="r-thank-you" style="font-size: 18px; font-weight: bold; color: #1e3a8a;"></p>
             </div>
 
-            <div style="position: absolute; bottom: 25px; left: 25px;">
-                <p style="border-top: 1px solid #000; padding-top: 5px; font-size: 15px; font-weight:bold;">গ্রাহকের স্বাক্ষর</p>
+            <div style="position: absolute; bottom: 25px; right: 25px;">
+                <p style="border-top: 1px solid #000; padding-top: 5px; font-size: 15px; font-weight:bold;">আদায়কারীর স্বাক্ষর</p>
             </div>
         </div>
     </div>
@@ -268,11 +269,6 @@
 
         let usersMap = {}; let currentActiveUserId = null; let isAppLocked = false; let currentAutoReceiptNo = 244;
         const bnMonths = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
-
-        function numberToBanglaWords(amount) {
-            const numStr = amount.toString(); const en = ['0','1','2','3','4','5','6','7','8','9']; const bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-            let res = ''; for(let i=0; i<numStr.length; i++) { let idx = en.indexOf(numStr[i]); res += idx !== -1 ? bn[idx] : numStr[i]; } return res + " টাকা মাত্র";
-        }
 
         window.onload = () => {
             checkSubscription(); loadDashboardData(); loadCustomers(); loadComplaints(); loadResolvedComplaints();
@@ -448,12 +444,11 @@
         }
 
         function downloadPDF(rNo, dt, mth, amt, nm, uid, add) {
-            document.getElementById('r-id').innerText = rNo; document.getElementById('r-date').innerText = dt;
+            document.getElementById('r-id').innerText = rNo || "N/A"; document.getElementById('r-date').innerText = dt;
             document.getElementById('r-name').innerText = nm; document.getElementById('r-userid').innerText = uid;
             document.getElementById('r-address').innerText = add || "N/A"; 
-            document.getElementById('r-amount').innerText = amt; document.getElementById('r-words').innerText = numberToBanglaWords(amt);
+            document.getElementById('r-amount').innerText = amt; 
             
-            // Dynamic Thank You Note
             let paidMonthName = mth.split(' ')[0]; 
             document.getElementById('r-thank-you').innerText = `ধন্যবাদ ${paidMonthName} মাসের বিল পরিশোধ করার জন্য।`;
 
@@ -495,18 +490,31 @@
             let rep = document.getElementById('reply-'+id).value.trim() || "কর্তৃপক্ষ সমস্যা সমাধান করেছেন।";
             db.ref('complaints/'+id).update({ status: 'resolved', adminReply: rep }).then(() => alert("সমাধান করা হয়েছে!"));
         }
+        function deleteComplaint(ticketId) {
+            if(confirm("এই অভিযোগটি চিরতরে মুছে ফেলতে চান?")) {
+                db.ref('complaints/' + ticketId).remove();
+            }
+        }
         function loadResolvedComplaints() {
             db.ref('complaints').orderByChild('status').equalTo('resolved').on('value', snap => {
                 let cnt = document.getElementById('resolved-complaints-container'); cnt.innerHTML = '';
                 if(snap.exists()) {
-                    snap.forEach(ch => {
-                        let comp = ch.val();
-                        cnt.innerHTML += `<div class="bg-green-50 border border-green-200 p-5 rounded-2xl relative mb-3 shadow-sm">
-                            <button onclick="db.ref('complaints/${comp.ticketId}').remove()" class="absolute top-4 right-4 text-red-400 hover:text-red-600 transition"><i class="fas fa-trash text-lg"></i></button>
-                            <p class="font-bold text-lg">${comp.name}</p>
-                            <div class="bg-white p-3 rounded-xl border border-green-100 mt-2 text-sm text-gray-700 font-semibold shadow-inner">সমস্যা: ${comp.issue}</div>
-                            <div class="bg-green-100 p-3 rounded-xl border border-green-200 mt-2 text-sm text-green-800 font-bold">রিপ্লাই: ${comp.adminReply}</div>
-                        </div>`;
+                    let comps = []; snap.forEach(ch => comps.push(ch.val())); comps.reverse();
+                    comps.forEach(comp => {
+                        let safeIssue = comp.issue || "সমস্যা উল্লেখ নেই";
+                        let safeReply = comp.adminReply || "কর্তৃপক্ষ সমস্যা সমাধান করেছেন।";
+                        cnt.innerHTML += `
+                            <div class="bg-white border border-green-200 p-4 rounded-2xl shadow-sm mb-3 cursor-pointer hover:shadow-md transition" onclick="document.getElementById('res-det-${comp.ticketId}').classList.toggle('hidden')">
+                                <div class="flex justify-between items-center">
+                                    <div><p class="font-bold text-gray-800 text-lg">${comp.name}</p><p class="text-xs text-gray-500"><i class="far fa-clock"></i> ${comp.date || ''}</p></div>
+                                    <div class="bg-green-100 text-green-600 w-8 h-8 rounded-full flex justify-center items-center"><i class="fas fa-chevron-down"></i></div>
+                                </div>
+                                <div id="res-det-${comp.ticketId}" class="hidden mt-4 border-t border-gray-100 pt-4">
+                                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 text-sm text-gray-700 font-medium mb-3 shadow-inner"><span class="text-xs text-red-500 font-bold block mb-1">গ্রাহকের সমস্যা:</span>"${safeIssue}"</div>
+                                    <div class="bg-green-50 p-3 rounded-xl border border-green-100 text-sm text-green-800 font-bold mb-4 shadow-inner"><span class="text-xs text-green-600 font-bold block mb-1">আপনার রিপ্লাই:</span>"${safeReply}"</div>
+                                    <button onclick="event.stopPropagation(); deleteComplaint('${comp.ticketId}')" class="w-full bg-red-50 hover:bg-red-500 hover:text-white text-red-600 py-3 rounded-xl font-bold border border-red-200 transition shadow-sm"><i class="fas fa-trash-alt mr-1"></i> অভিযোগটি মুছে ফেলুন</button>
+                                </div>
+                            </div>`;
                     });
                 } else { cnt.innerHTML = `<p class="text-center text-gray-400 py-10 font-bold">কোনো সমাধানকৃত অভিযোগ নেই</p>`; }
             });
