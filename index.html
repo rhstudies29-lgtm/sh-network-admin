@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Anti-Cache Meta Tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>মালিক প্যানেল - এস.এইচ ক্যাবল নেটওয়ার্ক</title>
+    
+    <title>মালিক প্যানেল - এস,এইচ ক্যাবল নেটওয়ার্ক</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <!-- html2pdf updated via cdn -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- HTML to JPEG Image Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
@@ -29,12 +33,12 @@
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .swal2-title, .swal2-html-container { font-family: 'Hind Siliguri', sans-serif !important; }
 
-        /* HD Receipt Template CSS */
+        /* Receipt Template CSS - For Image Export */
         #receipt-template {
             width: 210mm; height: 125mm; padding: 25px; background: white; color: black; font-family: 'Hind Siliguri', sans-serif;
             border: 2px solid #ccc; position: relative; margin: 0 auto;
         }
-        .rcpt-header { background: #1e3a8a; color: white; padding: 12px; text-align: center; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .rcpt-header { background: #1e3a8a; color: white; padding: 12px; text-align: center; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 5px; }
         .rcpt-row { display: flex; align-items: baseline; margin-bottom: 15px; }
         .rcpt-label { font-weight: bold; font-size: 15px; min-width: 100px; }
         .rcpt-line { flex-grow: 1; border-bottom: 1px dashed #000; margin-left: 10px; font-weight: bold; font-size: 16px; padding-bottom: 2px; }
@@ -62,7 +66,7 @@
             <i class="fas fa-wifi text-2xl text-blue-300"></i>
             <div>
                 <h1 class="text-lg font-extrabold tracking-wide">অ্যাডমিন প্যানেল</h1>
-                <p class="text-[10px] text-blue-200">এস.এইচ ক্যাবল নেটওয়ার্ক</p>
+                <p class="text-[10px] text-blue-200">এস,এইচ ক্যাবল নেটওয়ার্ক</p>
             </div>
         </div>
         <div class="flex items-center gap-2">
@@ -165,10 +169,8 @@
                 <div class="bg-white border border-blue-100 p-5 rounded-2xl text-center mb-5 shadow-sm">
                     <p class="text-sm font-bold text-gray-500">বর্তমান মেয়াদ:</p>
                     <p class="text-lg font-black text-blue-600 mt-1 mb-4" id="sub-expiry-date">লোড হচ্ছে...</p>
-                    
                     <p class="text-xs font-bold text-gray-500">ফি পাঠানোর নাম্বার (বিকাশ/নগদ):</p>
                     <p class="text-2xl font-black text-pink-600 mt-1 tracking-wider">01644234178</p>
-                    
                     <div class="mt-4 pt-4 border-t border-gray-100">
                         <p class="text-xs font-bold text-gray-500">নির্মাতাকে প্রদেয় মাসিক ফি:</p>
                         <p class="text-xl font-black text-green-600 mt-1"><span id="display-admin-fee">১২৫</span> টাকা</p>
@@ -249,26 +251,32 @@
             <div class="rcpt-header">
                 <i class="fas fa-satellite-dish" style="font-size: 40px;"></i>
                 <div>
-                    <!-- HD text with explicit font styling -->
-                    <h1 style="font-size: 32px; font-family: 'Hind Siliguri', sans-serif; font-weight: 900; margin: 0; letter-spacing: 0.5px;">এস.এইচ ক্যাবল নেটওয়ার্ক</h1>
+                    <!-- No letter-spacing to prevent font breaking in html2canvas -->
+                    <h1 style="font-size: 32px; font-family: 'Hind Siliguri', sans-serif; font-weight: 900; margin: 0;">এস,এইচ ক্যাবল নেটওয়ার্ক</h1>
                     <p style="margin: 4px 0 0 0; font-size: 14px;">উত্তর কেরোয়া, নয়ারহাট, জোড়পুল, রায়পুর, লক্ষ্মীপুর ।</p>
                 </div>
             </div>
             <p style="text-align: center; font-size: 16px; font-weight: bold; margin: 10px 0 15px 0;">মোবাইল : 01741253292, বিকাশ পেমেন্ট: 01315273777</p>
+            
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div style="font-weight:bold; font-size:16px;">নং- <span id="r-id" style="text-decoration:underline; padding:0 5px;"></span></div>
                 <div style="background: #1e3a8a; color: white; padding: 5px 20px; border-radius: 20px; font-weight: bold; font-size: 16px;">মাসিক বিল আদায়ের রশিদ</div>
                 <div style="font-weight:bold; font-size:16px;">তারিখ : <span id="r-date" style="border-bottom:1px dashed #000; padding:0 15px;"></span></div>
             </div>
+
+            <!-- Content Area (Full width) -->
             <div style="padding: 10px 20px;">
                 <div class="rcpt-row"><span class="rcpt-label">নাম</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-name" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">ইউজার আইডি</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-userid" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">ঠিকানা</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-address" class="rcpt-line"></span></div>
                 <div class="rcpt-row"><span class="rcpt-label">টাকা পরিমান</span><span class="rcpt-label" style="min-width:auto;">:</span><span id="r-amount" class="rcpt-line"></span><span style="font-weight:bold; font-size:16px; margin-left:10px;">টাকা</span></div>
             </div>
+
+            <!-- Dynamic Thank You Note -->
             <div style="margin-top: 25px; text-align: center;">
                 <p id="r-thank-you" style="font-size: 17px; font-weight: bold; color: #1e3a8a;"></p>
             </div>
+
             <div style="position: absolute; bottom: 25px; right: 25px;">
                 <p style="border-top: 1px dashed #000; padding-top: 5px; font-size: 15px; font-weight:bold; width: 150px; text-align: center;">আদায়কারীর স্বাক্ষর</p>
             </div>
@@ -293,10 +301,7 @@
             populatePayYears();
             db.ref('settings/owner_notice').once('value', snap => { if(snap.exists()) document.getElementById('admin-notice-input').value = snap.val(); });
             db.ref('receipt_counter').on('value', snap => { if(snap.exists()) currentAutoReceiptNo = snap.val(); });
-            // Fetch Developer Fee
-            db.ref('settings/admin_fee').on('value', snap => {
-                document.getElementById('display-admin-fee').innerText = snap.exists() ? snap.val() : '125';
-            });
+            db.ref('settings/admin_fee').on('value', snap => { document.getElementById('display-admin-fee').innerText = snap.exists() ? snap.val() : '125'; });
         };
 
         function checkSubscription() {
@@ -369,6 +374,8 @@
             document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.replace('nav-active', 'nav-inactive'); });
             btnElement.classList.replace('nav-inactive', 'nav-active');
         }
+        
+        function generateAutoId() { document.getElementById('new-c-id').value = "SH-" + Math.floor(1000 + Math.random() * 9000); }
         
         function updateNotice() { 
             db.ref('settings/owner_notice').set(document.getElementById('admin-notice-input').value).then(()=> Swal.fire('সফল', 'নোটিশ আপডেট হয়েছে!', 'success')); 
@@ -483,7 +490,7 @@
                             <div class="pl-1"><p class="font-bold text-sm text-gray-800">${p.month}</p><p class="text-[10px] text-gray-500"><i class="far fa-clock"></i> ${p.date} | রিসিট: ${p.receiptNo}</p></div>
                             <div class="text-right">
                                 <p class="text-green-600 font-black text-sm mb-1">৳${p.amount}</p>
-                                <button onclick="downloadPDF('${p.receiptNo}','${p.date}','${p.month}','${p.amount}','${usersMap[uid].name}','${uid}','${usersMap[uid].address}')" class="bg-white border text-blue-600 px-3 py-1 rounded shadow-sm text-xs font-bold transition hover:bg-gray-100"><i class="fas fa-download"></i> রশিদ</button>
+                                <button onclick="downloadImage('${p.receiptNo}','${p.date}','${p.month}','${p.amount}','${usersMap[uid].name}','${uid}','${usersMap[uid].address}')" class="bg-white border text-blue-600 px-3 py-1 rounded shadow-sm text-xs font-bold transition hover:bg-gray-100"><i class="fas fa-download"></i> রশিদ</button>
                             </div>
                         </div>`;
                     });
@@ -500,7 +507,8 @@
             });
         }
 
-        function downloadPDF(rNo, dt, mth, amt, nm, uid, add) {
+        // Changed from HTML2PDF to HTML2CANVAS (Direct JPEG Export)
+        function downloadImage(rNo, dt, mth, amt, nm, uid, add) {
             document.getElementById('r-id').innerText = rNo || "N/A"; document.getElementById('r-date').innerText = dt;
             document.getElementById('r-name').innerText = nm; document.getElementById('r-userid').innerText = uid;
             document.getElementById('r-address').innerText = add || "N/A"; 
@@ -509,14 +517,33 @@
             let paidMonthName = mth.split(' ')[0]; 
             document.getElementById('r-thank-you').innerText = `ধন্যবাদ ${paidMonthName} মাসের বিল পরিশোধ করার জন্য।`;
 
-            let el = document.getElementById('receipt-template'); document.getElementById('pdf-wrapper').classList.remove('hidden');
+            let el = document.getElementById('receipt-template'); 
+            document.getElementById('pdf-wrapper').classList.remove('hidden');
             
-            // High Quality PDF scale
-            html2pdf().set({ margin: 0, filename: `Receipt_${uid}_${mth}.pdf`, html2canvas: { scale: 3, useCORS: true, letterRendering: true }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } })
-            .from(el).save().then(() => document.getElementById('pdf-wrapper').classList.add('hidden'));
+            Swal.fire({ title: 'রশিদ তৈরি হচ্ছে...', text: 'দয়া করে কিছুক্ষণ অপেক্ষা করুন।', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+            // Ensure fonts are loaded before generating image
+            document.fonts.ready.then(() => {
+                html2canvas(el, {
+                    scale: 3, // High Quality
+                    useCORS: true,
+                    backgroundColor: "#ffffff"
+                }).then(canvas => {
+                    let imgData = canvas.toDataURL("image/jpeg", 1.0);
+                    let link = document.createElement('a');
+                    link.download = `Receipt_${uid}_${mth}.jpg`;
+                    link.href = imgData;
+                    link.click();
+                    
+                    document.getElementById('pdf-wrapper').classList.add('hidden');
+                    Swal.close();
+                }).catch(err => {
+                    Swal.fire('ত্রুটি', 'রশিদ তৈরি করতে সমস্যা হয়েছে।', 'error');
+                    document.getElementById('pdf-wrapper').classList.add('hidden');
+                });
+            });
         }
 
-        // ================= COMPLAINTS ACCORDION & FILTERS =================
         function toggleComplaints(type) {
             let pendingBtn = document.getElementById('btn-comp-pending');
             let resolvedBtn = document.getElementById('btn-comp-resolved');
@@ -584,7 +611,7 @@
         function resolveComplaint(id) {
             let rep = document.getElementById('reply-'+id).value.trim() || "কর্তৃপক্ষ সমস্যা সমাধান করেছেন।";
             
-            // Optimistic fast UI hide
+            // Fast UI Hide
             document.getElementById('comp-card-'+id).style.display = 'none';
 
             db.ref('complaints/'+id).update({ status: 'resolved', adminReply: rep, resolvedAt: Date.now() }).then(() => {
