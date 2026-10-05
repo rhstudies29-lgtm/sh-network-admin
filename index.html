@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>মালিক প্যানেল - এস,এইচ ক্যাবল নেটওয়ার্ক</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>মালিক প্যানেল - এস.এইচ ক্যাবল নেটওয়ার্ক</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- SweetAlert2 for Premium Popups -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- html2pdf updated via cdn -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -25,10 +27,9 @@
         
         .modal-enter { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
         .swal2-title, .swal2-html-container { font-family: 'Hind Siliguri', sans-serif !important; }
 
-        /* Receipt Template CSS */
+        /* HD Receipt Template CSS */
         #receipt-template {
             width: 210mm; height: 125mm; padding: 25px; background: white; color: black; font-family: 'Hind Siliguri', sans-serif;
             border: 2px solid #ccc; position: relative; margin: 0 auto;
@@ -43,18 +44,15 @@
 
     <!-- App Lock Screen -->
     <div id="app-lock-screen" class="fixed inset-0 bg-gray-900/95 z-[9999] hidden flex-col justify-center items-center px-6 backdrop-blur-md">
-        <div class="bg-red-500/20 p-5 rounded-full mb-4">
-            <i class="fas fa-lock text-6xl text-red-500 animate-pulse"></i>
-        </div>
+        <div class="bg-red-500/20 p-5 rounded-full mb-4"><i class="fas fa-lock text-6xl text-red-500 animate-pulse"></i></div>
         <h2 class="text-3xl font-black text-white mb-2 text-center">অ্যাপ লক হয়ে গেছে!</h2>
         <p class="text-gray-300 text-center mb-6 text-sm">আপনার সাবস্ক্রিপশন মেয়াদ শেষ। অ্যাপটি পুনরায় সচল করতে নিচের নাম্বারে ফি পরিশোধ করুন।</p>
         
         <div class="bg-white/10 p-6 rounded-2xl border border-white/20 text-center mb-8 w-full max-w-sm shadow-xl">
-            <p class="text-gray-300 text-xs font-bold mb-1">ফি পাঠানোর নাম্বার (বিকাশ/ন নগদ):</p>
+            <p class="text-gray-300 text-xs font-bold mb-1">ফি পাঠানোর নাম্বার (বিকাশ/নগদ):</p>
             <p class="text-4xl font-black text-yellow-400 tracking-widest mb-1 shadow-sm">01644234178</p>
             <p class="text-gray-400 text-[10px] uppercase tracking-widest">পার্সোনাল একাউন্ট</p>
         </div>
-
         <button onclick="openSettingsModal()" class="bg-green-500 text-white font-bold py-3.5 px-8 rounded-full shadow-2xl transition transform hover:scale-105 w-full max-w-sm"><i class="fas fa-paper-plane mr-2"></i> পেমেন্ট তথ্য সাবমিট করুন</button>
     </div>
 
@@ -64,13 +62,11 @@
             <i class="fas fa-wifi text-2xl text-blue-300"></i>
             <div>
                 <h1 class="text-lg font-extrabold tracking-wide">অ্যাডমিন প্যানেল</h1>
-                <p class="text-[10px] text-blue-200">এস,এইচ ক্যাবল নেটওয়ার্ক</p>
+                <p class="text-[10px] text-blue-200">এস.এইচ ক্যাবল নেটওয়ার্ক</p>
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <div class="bg-white/20 px-3 py-1.5 rounded-full text-sm font-bold flex items-center shadow-inner">
-                <i class="fas fa-user-shield mr-1"></i> প্রোঃ সুমন
-            </div>
+            <div class="bg-white/20 px-3 py-1.5 rounded-full text-sm font-bold flex items-center shadow-inner"><i class="fas fa-user-shield mr-1"></i> প্রোঃ সুমন</div>
             <button onclick="openSettingsModal()" class="text-white text-xl ml-1 p-2 rounded-full hover:bg-white/20 transition"><i class="fas fa-cog"></i></button>
         </div>
     </nav>
@@ -80,7 +76,6 @@
         আপনার সাবস্ক্রিপশন মেয়াদ আর মাত্র <span id="days-left"></span> দিন আছে! দ্রুত ফি প্রদান করুন।
     </div>
 
-    <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-4 pb-24 smooth-scroll" id="main-content">
         <!-- Dashboard Tab -->
         <div id="tab-dashboard" class="tab-section">
@@ -103,14 +98,14 @@
 
         <!-- Add Customer Tab -->
         <div id="tab-add" class="tab-section hidden">
-            <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-user-plus text-blue-500 mr-1"></i> নতুন গ্রাহক</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-user-plus text-blue-500 mr-1"></i> নতুন গ্রাহক তৈরি</h2>
             <div class="bg-white p-6 rounded-3xl shadow-sm max-w-md mx-auto border border-gray-100">
-                <input type="text" id="new-c-id" readonly class="w-full py-3.5 px-4 border border-blue-200 rounded-2xl bg-blue-50 font-black text-blue-700 mb-4 outline-none">
-                <input type="text" id="new-c-name" placeholder="নাম লিখুন (ফাঁকা রাখলে ডেমো তৈরি হবে)" class="w-full py-3.5 px-4 border border-gray-200 rounded-2xl mb-4 font-bold outline-none focus:border-blue-500 transition">
+                <input type="text" id="new-c-id" placeholder="ইউজার আইডি লিখুন (যেমন: SH-001)" class="w-full py-3.5 px-4 border border-blue-300 rounded-2xl bg-blue-50/50 font-bold text-blue-700 mb-4 outline-none focus:ring-2 focus:ring-blue-200 transition">
+                <input type="text" id="new-c-name" placeholder="গ্রাহকের নাম লিখুন" class="w-full py-3.5 px-4 border border-gray-200 rounded-2xl mb-4 font-bold outline-none focus:border-blue-500 transition">
                 <input type="number" id="new-c-mobile" placeholder="মোবাইল নাম্বার" class="w-full py-3.5 px-4 border border-gray-200 rounded-2xl mb-4 font-bold outline-none focus:border-blue-500 transition">
                 <textarea id="new-c-address" rows="2" placeholder="ঠিকানা" class="w-full py-3.5 px-4 border border-gray-200 rounded-2xl mb-4 font-bold outline-none focus:border-blue-500 resize-none transition"></textarea>
                 <input type="number" id="new-c-bill" placeholder="মাসিক ফি (৳)" class="w-full py-3.5 px-4 border border-gray-200 rounded-2xl mb-5 font-black text-gray-800 outline-none focus:border-blue-500 transition text-lg">
-                <button onclick="saveCustomer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold shadow-lg transition">গ্রাহক যুক্ত করুন</button>
+                <button onclick="saveCustomer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold shadow-lg transition">গ্রাহক সেভ করুন</button>
             </div>
         </div>
 
@@ -125,20 +120,29 @@
 
         <!-- Complaints Tab -->
         <div id="tab-complaints" class="tab-section hidden h-full flex-col">
-            <div class="flex gap-2 mb-4 bg-gray-200 p-1.5 rounded-2xl">
+            <div class="flex gap-2 mb-4 bg-gray-200 p-1.5 rounded-2xl shrink-0">
                 <button onclick="toggleComplaints('pending')" id="btn-comp-pending" class="flex-1 bg-white text-red-600 shadow-sm py-2.5 rounded-xl font-bold text-sm transition">পেন্ডিং</button>
                 <button onclick="toggleComplaints('resolved')" id="btn-comp-resolved" class="flex-1 text-gray-600 py-2.5 rounded-xl font-bold text-sm transition">সমাধানকৃত</button>
             </div>
             
-            <!-- Pending Complaints -->
-            <div class="grid grid-cols-1 gap-3 overflow-y-auto pb-4 smooth-scroll" id="complaints-container"></div>
+            <div class="grid grid-cols-1 overflow-y-auto pb-4 smooth-scroll" id="complaints-container"></div>
             
-            <!-- Resolved Complaints -->
-            <div class="grid grid-cols-1 gap-3 overflow-y-auto pb-4 smooth-scroll hidden" id="resolved-complaints-container"></div>
+            <div id="resolved-section-wrapper" class="hidden flex-col h-full">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-green-100 mb-3 shrink-0">
+                    <div class="flex gap-2 mb-3">
+                        <input type="date" id="res-filter-date" onchange="filterResolvedComplaints()" class="flex-1 p-2.5 border border-gray-200 rounded-xl outline-none font-bold text-gray-700 text-sm focus:border-green-400">
+                        <input type="text" id="res-search-text" onkeyup="filterResolvedComplaints()" placeholder="নাম বা আইডি খুঁজুন..." class="flex-1 p-2.5 border border-gray-200 rounded-xl outline-none font-bold text-gray-700 text-sm focus:border-green-400">
+                    </div>
+                    <div class="flex justify-between items-center px-1">
+                        <p class="text-xs font-bold text-gray-500">মোট সমাধান:</p>
+                        <p class="text-sm font-black text-green-600"><span id="res-total-count">0</span> টি</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 overflow-y-auto pb-4 smooth-scroll flex-1" id="resolved-complaints-container"></div>
+            </div>
         </div>
     </main>
 
-    <!-- Bottom Nav -->
     <div class="bg-white border-t flex justify-between fixed bottom-0 w-full px-2 py-1 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] z-30">
         <button onclick="switchTab('tab-dashboard', this)" class="nav-btn nav-active flex-1 py-2 flex flex-col items-center"><i class="fas fa-home text-[20px] mb-1"></i><span class="text-[10px]">ড্যাশবোর্ড</span></button>
         <button onclick="switchTab('tab-add', this)" class="nav-btn nav-inactive flex-1 py-2 flex flex-col items-center"><i class="fas fa-user-plus text-[20px] mb-1"></i><span class="text-[10px]">নতুন গ্রাহক</span></button>
@@ -161,19 +165,23 @@
                 <div class="bg-white border border-blue-100 p-5 rounded-2xl text-center mb-5 shadow-sm">
                     <p class="text-sm font-bold text-gray-500">বর্তমান মেয়াদ:</p>
                     <p class="text-lg font-black text-blue-600 mt-1 mb-4" id="sub-expiry-date">লোড হচ্ছে...</p>
+                    
                     <p class="text-xs font-bold text-gray-500">ফি পাঠানোর নাম্বার (বিকাশ/নগদ):</p>
                     <p class="text-2xl font-black text-pink-600 mt-1 tracking-wider">01644234178</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <p class="text-xs font-bold text-gray-500">নির্মাতাকে প্রদেয় মাসিক ফি:</p>
+                        <p class="text-xl font-black text-green-600 mt-1"><span id="display-admin-fee">১২৫</span> টাকা</p>
+                    </div>
                 </div>
 
                 <button onclick="toggleInbox()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl font-bold mb-3 shadow-md transition flex justify-center items-center gap-2"><i class="fas fa-inbox"></i> ইনবক্স / নির্মাতার মেসেজ</button>
-                
                 <div id="dev-inbox-box" class="hidden bg-white p-4 rounded-2xl border border-indigo-100 mb-4 shadow-sm">
                     <h4 class="font-bold text-indigo-700 text-sm mb-3 border-b pb-2">নির্মাতার পাঠানো মেসেজসমূহ</h4>
                     <div id="dev-messages-list" class="flex flex-col gap-2 max-h-48 overflow-y-auto smooth-scroll"></div>
                 </div>
 
                 <button onclick="document.getElementById('dev-payment-form').classList.toggle('hidden')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-2xl font-bold mb-4 shadow-md transition flex justify-center items-center gap-2"><i class="fas fa-paper-plane"></i> নির্মাতাকে পেমেন্ট করুন</button>
-                
                 <div id="dev-payment-form" class="bg-white p-5 rounded-2xl border border-emerald-100 mb-5 hidden shadow-sm">
                     <select id="dev-pay-method" class="w-full p-3 border border-gray-200 rounded-xl mb-3 font-bold bg-gray-50 outline-none focus:border-emerald-400"><option value="bKash">বিকাশ</option><option value="Nagad">নগদ</option></select>
                     <input type="number" id="dev-pay-months" placeholder="কত মাসের ফি?" class="w-full p-3 border border-gray-200 rounded-xl mb-3 font-bold outline-none focus:border-emerald-400">
@@ -185,7 +193,7 @@
                 <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
                     <h4 class="font-bold text-gray-700 text-sm mb-3"><i class="fas fa-tools text-amber-500 mr-1"></i> নির্মাতাকে মেসেজ দিন</h4>
                     <textarea id="dev-msg-input" rows="3" placeholder="সমস্যা বা মতামত লিখুন..." class="w-full p-3 border border-gray-200 rounded-xl mb-3 text-sm bg-gray-50 resize-none outline-none focus:border-amber-400"></textarea>
-                    <button onclick="sendDevMessage()" class="w-full bg-amber-50 hover:bg-amber-500 hover:text-white text-amber-600 border border-amber-200 py-3 rounded-xl font-bold shadow-sm transition">মেসেজ পাঠান</button>
+                    <button onclick="sendDevMessage()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-xl font-bold shadow-md transition">মেসেজ পাঠান</button>
                 </div>
             </div>
         </div>
@@ -241,13 +249,12 @@
             <div class="rcpt-header">
                 <i class="fas fa-satellite-dish" style="font-size: 40px;"></i>
                 <div>
-                    <h1 style="font-size: 32px; font-weight: 900; margin: 0; letter-spacing: 1px;">এস,এইচ ক্যাবল নেটওয়ার্ক</h1>
+                    <!-- HD text with explicit font styling -->
+                    <h1 style="font-size: 32px; font-family: 'Hind Siliguri', sans-serif; font-weight: 900; margin: 0; letter-spacing: 0.5px;">এস.এইচ ক্যাবল নেটওয়ার্ক</h1>
                     <p style="margin: 4px 0 0 0; font-size: 14px;">উত্তর কেরোয়া, নয়ারহাট, জোড়পুল, রায়পুর, লক্ষ্মীপুর ।</p>
                 </div>
             </div>
-            <p style="text-align: center; font-size: 16px; font-weight: bold; margin: 10px 0 15px 0;">
-                মোবাইল : 01741253292, বিকাশ পেমেন্ট: 01315273777
-            </p>
+            <p style="text-align: center; font-size: 16px; font-weight: bold; margin: 10px 0 15px 0;">মোবাইল : 01741253292, বিকাশ পেমেন্ট: 01315273777</p>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div style="font-weight:bold; font-size:16px;">নং- <span id="r-id" style="text-decoration:underline; padding:0 5px;"></span></div>
                 <div style="background: #1e3a8a; color: white; padding: 5px 20px; border-radius: 20px; font-weight: bold; font-size: 16px;">মাসিক বিল আদায়ের রশিদ</div>
@@ -278,13 +285,18 @@
         const db = firebase.database();
 
         let usersMap = {}; let currentActiveUserId = null; let isAppLocked = false; let currentAutoReceiptNo = 244;
+        let resolvedComplaintsData = [];
         const bnMonths = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
 
         window.onload = () => {
             checkSubscription(); loadDashboardData(); loadCustomers(); loadComplaints(); loadResolvedComplaints();
-            populatePayYears(); generateAutoId();
+            populatePayYears();
             db.ref('settings/owner_notice').once('value', snap => { if(snap.exists()) document.getElementById('admin-notice-input').value = snap.val(); });
             db.ref('receipt_counter').on('value', snap => { if(snap.exists()) currentAutoReceiptNo = snap.val(); });
+            // Fetch Developer Fee
+            db.ref('settings/admin_fee').on('value', snap => {
+                document.getElementById('display-admin-fee').innerText = snap.exists() ? snap.val() : '125';
+            });
         };
 
         function checkSubscription() {
@@ -317,7 +329,6 @@
             let box = document.getElementById('dev-inbox-box'); box.classList.toggle('hidden');
             if(!box.classList.contains('hidden')) loadDevInbox();
         }
-        
         function loadDevInbox() {
             db.ref('dev_messages').on('value', snap => {
                 let list = document.getElementById('dev-messages-list'); list.innerHTML = '';
@@ -334,7 +345,6 @@
                 }
             });
         }
-        
         function deleteDevMessage(key) {
             Swal.fire({
                 title: 'মুছতে চান?', icon: 'warning', showCancelButton: true, confirmButtonText: 'হ্যাঁ', cancelButtonText: 'না'
@@ -342,16 +352,11 @@
                 if (result.isConfirmed) db.ref('dev_messages/' + key).remove();
             });
         }
-
         function submitDevPayment() {
             let mth = document.getElementById('dev-pay-months').value; let snd = document.getElementById('dev-pay-sender').value; let trx = document.getElementById('dev-pay-trx').value;
             if(!mth || !snd || !trx) return Swal.fire({ icon: 'warning', text: 'সব তথ্য দিন!' });
-            
             db.ref('dev_payments').push({ method: document.getElementById('dev-pay-method').value, months: mth, sender: snd, trxId: trx, date: new Date().toLocaleDateString('bn-BD'), status: 'pending' })
-            .then(() => { 
-                Swal.fire('সফল', 'পেমেন্ট তথ্য পাঠানো হয়েছে।', 'success'); 
-                document.getElementById('dev-payment-form').classList.add('hidden'); 
-            });
+            .then(() => { Swal.fire('সফল', 'পেমেন্ট তথ্য পাঠানো হয়েছে।', 'success'); document.getElementById('dev-payment-form').classList.add('hidden'); });
         }
         function sendDevMessage() {
             let msg = document.getElementById('dev-msg-input').value.trim(); if(!msg) return Swal.fire({ icon: 'warning', text: 'মেসেজ লিখুন!' });
@@ -363,10 +368,7 @@
             document.querySelectorAll('.tab-section').forEach(tab => tab.classList.add('hidden')); document.getElementById(tabId).classList.remove('hidden');
             document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.replace('nav-active', 'nav-inactive'); });
             btnElement.classList.replace('nav-inactive', 'nav-active');
-            if(tabId === 'tab-add') generateAutoId();
         }
-        
-        function generateAutoId() { document.getElementById('new-c-id').value = "SH-" + Math.floor(1000 + Math.random() * 9000); }
         
         function updateNotice() { 
             db.ref('settings/owner_notice').set(document.getElementById('admin-notice-input').value).then(()=> Swal.fire('সফল', 'নোটিশ আপডেট হয়েছে!', 'success')); 
@@ -374,26 +376,29 @@
         function loadDashboardData() { db.ref('users').on('value', snap => document.getElementById('stat-customers').innerText = snap.numChildren() || 0); }
 
         function saveCustomer() {
-            let id = document.getElementById('new-c-id').value; let name = document.getElementById('new-c-name').value.trim();
-            let mobile = document.getElementById('new-c-mobile').value.trim(); let address = document.getElementById('new-c-address').value.trim(); let bill = document.getElementById('new-c-bill').value.trim();
+            let id = document.getElementById('new-c-id').value.trim(); 
+            let name = document.getElementById('new-c-name').value.trim();
+            let mobile = document.getElementById('new-c-mobile').value.trim(); 
+            let address = document.getElementById('new-c-address').value.trim(); 
+            let bill = document.getElementById('new-c-bill').value.trim();
 
-            if(!name) {
-                Swal.fire({
-                    title: 'ডেমো গ্রাহক?', text: "ফর্ম ফাঁকা রেখেছেন। টেস্ট করার জন্য ডেমো গ্রাহক তৈরি করতে চান?", icon: 'question',
-                    showCancelButton: true, confirmButtonText: 'হ্যাঁ', cancelButtonText: 'না'
-                }).then((res) => {
-                    if(res.isConfirmed){
-                        let d = new Date(); d.setMonth(d.getMonth() - 2); 
-                        let demoId = "SH-" + Math.floor(1000 + Math.random() * 9000);
-                        db.ref('users/' + demoId).set({ userId: demoId, name: "ডেমো গ্রাহক (টেস্ট)", mobile: "01700000000", address: "ডেমো ঠিকানা", monthly_bill: "500", createdAtTS: d.getTime() })
-                        .then(() => { Swal.fire('সফল', 'ডেমো তৈরি হয়েছে!', 'success'); switchTab('tab-list', document.querySelectorAll('.nav-btn')[2]); });
-                    }
-                });
-                return;
-            }
+            if(!id || !name || !mobile || !bill) return Swal.fire('সতর্কতা', 'দয়া করে ইউজার আইডিসহ সব প্রয়োজনীয় তথ্য পূরণ করুন!', 'warning');
             
-            db.ref('users/' + id).set({ userId: id, name: name, mobile: mobile, address: address, monthly_bill: bill, createdAtTS: new Date().getTime() })
-            .then(() => { Swal.fire('সফল', 'গ্রাহক যুক্ত হয়েছে!', 'success'); document.getElementById('new-c-name').value=''; generateAutoId(); switchTab('tab-list', document.querySelectorAll('.nav-btn')[2]);});
+            Swal.fire({ title: 'চেক করা হচ্ছে...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+            db.ref('users/' + id).once('value', snap => {
+                if(snap.exists()) {
+                    Swal.fire('সতর্কতা', 'এই ইউজার আইডিটি আগেই ব্যবহার করা হয়েছে! দয়া করে নতুন আইডি দিন।', 'error');
+                } else {
+                    db.ref('users/' + id).set({ userId: id, name: name, mobile: mobile, address: address, monthly_bill: bill, createdAtTS: new Date().getTime() })
+                    .then(() => { 
+                        Swal.fire('সফল', 'গ্রাহক যুক্ত হয়েছে!', 'success'); 
+                        document.getElementById('new-c-id').value=''; document.getElementById('new-c-name').value=''; 
+                        document.getElementById('new-c-mobile').value=''; document.getElementById('new-c-address').value=''; document.getElementById('new-c-bill').value='';
+                        switchTab('tab-list', document.querySelectorAll('.nav-btn')[2]);
+                    });
+                }
+            });
         }
 
         function loadCustomers() {
@@ -402,7 +407,7 @@
                 if(snapshot.exists()){
                     snapshot.forEach(child => {
                         let user = child.val(); usersMap[user.userId] = user; 
-                        container.innerHTML += `<div onclick="openCustomerModal('${user.userId}')" class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center user-card cursor-pointer shadow-sm hover:shadow-md transition relative">
+                        container.innerHTML += `<div onclick="openCustomerModal('${user.userId}')" class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center user-card cursor-pointer shadow-sm hover:shadow-md transition relative mb-2">
                             <div class="bg-blue-100 text-blue-600 font-black w-10 h-10 rounded-full flex justify-center items-center mr-4">#${sl++}</div>
                             <div class="flex-1"><p class="font-bold text-gray-800 text-lg u-name">${user.name}</p><p class="text-xs text-gray-500 font-bold bg-gray-50 px-2 py-0.5 rounded border inline-block mt-1 u-mobile">${user.mobile}</p></div>
                         </div>`;
@@ -410,7 +415,6 @@
                 }
             });
         }
-        
         function searchCustomer() {
             let filter = document.getElementById('search-box').value.toUpperCase();
             document.querySelectorAll('.user-card').forEach(card => {
@@ -438,8 +442,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     db.ref('users/'+currentActiveUserId).remove(); db.ref('payments/'+currentActiveUserId).remove(); 
-                    closeCustomerModal();
-                    Swal.fire('সফল', 'গ্রাহককে মুছে ফেলা হয়েছে।', 'success');
+                    closeCustomerModal(); Swal.fire('সফল', 'গ্রাহককে মুছে ফেলা হয়েছে।', 'success');
                 }
             });
         }
@@ -465,7 +468,7 @@
             .then(() => { 
                 db.ref('receipt_counter').set(r + 1); 
                 downloadPDF(r, d, m, a, u.name, u.userId, u.address); 
-                Swal.fire('সফল', 'বিল জমা হয়েছে!', 'success'); 
+                Swal.fire({icon: 'success', title: 'সফল', text: 'বিল জমা হয়েছে!', timer: 2000, showConfirmButton: false});
             });
         }
 
@@ -476,7 +479,7 @@
                 if(snap.exists()) {
                     snap.forEach(c => { let v = c.val(); recs.push(v); paidSet.add(v.month); }); recs.reverse(); 
                     recs.forEach(p => {
-                        cnt.innerHTML += `<div class="bg-gray-50 p-3 border rounded-xl flex justify-between items-center relative shadow-sm">
+                        cnt.innerHTML += `<div class="bg-gray-50 p-3 border rounded-xl flex justify-between items-center relative shadow-sm mb-2">
                             <div class="pl-1"><p class="font-bold text-sm text-gray-800">${p.month}</p><p class="text-[10px] text-gray-500"><i class="far fa-clock"></i> ${p.date} | রিসিট: ${p.receiptNo}</p></div>
                             <div class="text-right">
                                 <p class="text-green-600 font-black text-sm mb-1">৳${p.amount}</p>
@@ -507,36 +510,71 @@
             document.getElementById('r-thank-you').innerText = `ধন্যবাদ ${paidMonthName} মাসের বিল পরিশোধ করার জন্য।`;
 
             let el = document.getElementById('receipt-template'); document.getElementById('pdf-wrapper').classList.remove('hidden');
-            html2pdf().set({ margin: 0, filename: `Receipt_${uid}_${mth}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } })
+            
+            // High Quality PDF scale
+            html2pdf().set({ margin: 0, filename: `Receipt_${uid}_${mth}.pdf`, html2canvas: { scale: 3, useCORS: true, letterRendering: true }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } })
             .from(el).save().then(() => document.getElementById('pdf-wrapper').classList.add('hidden'));
         }
 
+        // ================= COMPLAINTS ACCORDION & FILTERS =================
         function toggleComplaints(type) {
+            let pendingBtn = document.getElementById('btn-comp-pending');
+            let resolvedBtn = document.getElementById('btn-comp-resolved');
+            let pendingCont = document.getElementById('complaints-container');
+            let resolvedContWrapper = document.getElementById('resolved-section-wrapper');
+
             if(type === 'pending') {
-                document.getElementById('btn-comp-pending').classList.add('bg-white', 'shadow-sm', 'text-red-600');
-                document.getElementById('btn-comp-resolved').classList.remove('bg-white', 'shadow-sm', 'text-green-600');
-                document.getElementById('complaints-container').classList.remove('hidden'); document.getElementById('resolved-complaints-container').classList.add('hidden');
+                pendingBtn.classList.add('bg-white', 'shadow-sm', 'text-red-600');
+                resolvedBtn.classList.remove('bg-white', 'shadow-sm', 'text-green-600');
+                pendingCont.classList.remove('hidden'); 
+                resolvedContWrapper.classList.add('hidden');
             } else {
-                document.getElementById('btn-comp-resolved').classList.add('bg-white', 'shadow-sm', 'text-green-600');
-                document.getElementById('btn-comp-pending').classList.remove('bg-white', 'shadow-sm', 'text-red-600');
-                document.getElementById('complaints-container').classList.add('hidden'); document.getElementById('resolved-complaints-container').classList.remove('hidden');
+                resolvedBtn.classList.add('bg-white', 'shadow-sm', 'text-green-600');
+                pendingBtn.classList.remove('bg-white', 'shadow-sm', 'text-red-600');
+                pendingCont.classList.add('hidden'); 
+                resolvedContWrapper.classList.remove('hidden');
+                document.getElementById('resolved-section-wrapper').classList.add('flex');
             }
         }
         
+        function toggleAcc(id) {
+            let el = document.getElementById(id);
+            if(el.classList.contains('hidden')) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
         function loadComplaints() {
             db.ref('complaints').orderByChild('status').equalTo('pending').on('value', snap => {
                 let cnt = document.getElementById('complaints-container'); cnt.innerHTML = ''; let c = snap.numChildren()||0;
                 document.getElementById('stat-complaints').innerText = c;
                 if(c > 0) { document.getElementById('complaint-badge-nav').innerText=c; document.getElementById('complaint-badge-nav').classList.remove('hidden'); } else document.getElementById('complaint-badge-nav').classList.add('hidden');
+                
                 if(snap.exists()) {
-                    snap.forEach(ch => {
-                        let comp = ch.val();
+                    let pComps = [];
+                    snap.forEach(ch => pComps.push(ch.val()));
+                    pComps.reverse(); // Newest first
+
+                    pComps.forEach(comp => {
                         let safeIssue = comp.issue || "সমস্যা উল্লেখ নেই";
-                        cnt.innerHTML += `<div class="bg-red-50 border border-red-200 p-5 rounded-2xl relative mb-3 shadow-sm">
-                            <span class="absolute top-4 right-4 bg-red-500 text-white text-[10px] px-2 py-1 rounded font-bold animate-pulse">পেন্ডিং</span>
-                            <p class="font-bold text-lg">${comp.name || 'অজ্ঞাত'}</p><div class="bg-white p-3 rounded-xl border mt-3 text-sm font-semibold text-gray-700 shadow-inner">"${safeIssue}"</div>
-                            <textarea id="reply-${comp.ticketId}" placeholder="রিপ্লাই দিন..." class="w-full p-3 border rounded-xl mt-3 mb-3 resize-none text-sm outline-none focus:ring-1 focus:ring-red-400"></textarea>
-                            <button onclick="resolveComplaint('${comp.ticketId}')" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold shadow-md transition">সমাধান করুন</button>
+                        let safeName = comp.name || 'অজ্ঞাত';
+                        let ts = parseInt(comp.ticketId.replace('T-', ''));
+                        let timeStr = new Date(ts).toLocaleTimeString('bn-BD', {hour: '2-digit', minute:'2-digit'});
+                        let dateVal = new Date(ts).toLocaleDateString('bn-BD');
+
+                        cnt.innerHTML += `
+                        <div id="comp-card-${comp.ticketId}" class="bg-red-50 border border-red-200 p-4 rounded-2xl relative mb-3 shadow-sm cursor-pointer hover:shadow-md transition" onclick="toggleAcc('acc-${comp.ticketId}')">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold text-lg text-gray-800">${safeName}</p>
+                                    <p class="text-xs text-gray-500 font-semibold"><i class="far fa-clock"></i> ${dateVal} &nbsp; ${timeStr}</p>
+                                </div>
+                                <span class="bg-red-500 text-white text-[10px] px-2 py-1 rounded font-bold animate-pulse">পেন্ডিং</span>
+                            </div>
+                            <div id="acc-${comp.ticketId}" class="hidden mt-3 pt-3 border-t border-red-100" onclick="event.stopPropagation()">
+                                <div class="bg-white p-3 rounded-xl border border-red-100 text-sm font-semibold text-gray-700 shadow-inner mb-3">"${safeIssue}"</div>
+                                <textarea id="reply-${comp.ticketId}" placeholder="রিপ্লাই দিন..." class="w-full p-3 border border-gray-200 rounded-xl mb-3 resize-none text-sm outline-none focus:border-red-400"></textarea>
+                                <button onclick="resolveComplaint('${comp.ticketId}')" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold shadow-md transition">সমাধান করুন</button>
+                            </div>
                         </div>`;
                     });
                 } else { cnt.innerHTML = `<p class="text-center text-gray-400 py-10 font-bold">নতুন কোনো অভিযোগ নেই</p>`; }
@@ -545,8 +583,13 @@
         
         function resolveComplaint(id) {
             let rep = document.getElementById('reply-'+id).value.trim() || "কর্তৃপক্ষ সমস্যা সমাধান করেছেন।";
-            // 72 Hour feature - Adding resolvedAt timestamp
-            db.ref('complaints/'+id).update({ status: 'resolved', adminReply: rep, resolvedAt: Date.now() }).then(() => Swal.fire('সফল', 'সমাধান করা হয়েছে!', 'success'));
+            
+            // Optimistic fast UI hide
+            document.getElementById('comp-card-'+id).style.display = 'none';
+
+            db.ref('complaints/'+id).update({ status: 'resolved', adminReply: rep, resolvedAt: Date.now() }).then(() => {
+                Swal.fire({icon:'success', title:'সফল', text:'সমাধানকৃত তালিকায় যোগ হয়েছে!', toast: true, position: 'top-end', timer:1500, showConfirmButton:false});
+            });
         }
         
         function deleteComplaint(ticketId) {
@@ -560,28 +603,62 @@
         
         function loadResolvedComplaints() {
             db.ref('complaints').orderByChild('status').equalTo('resolved').on('value', snap => {
-                let cnt = document.getElementById('resolved-complaints-container'); cnt.innerHTML = '';
+                resolvedComplaintsData = [];
                 if(snap.exists()) {
-                    let comps = []; snap.forEach(ch => comps.push(ch.val())); comps.reverse();
-                    comps.forEach(comp => {
-                        let safeName = comp.name || "অজ্ঞাত";
-                        let safeDate = comp.date || "";
-                        let safeIssue = comp.issue || "সমস্যা উল্লেখ নেই";
-                        let safeReply = comp.adminReply || "কর্তৃপক্ষ সমস্যা সমাধান করেছেন।";
-                        cnt.innerHTML += `
-                            <div class="bg-white border border-green-200 p-4 rounded-2xl shadow-sm mb-3 cursor-pointer hover:shadow-md transition" onclick="document.getElementById('res-det-${comp.ticketId}').classList.toggle('hidden')">
-                                <div class="flex justify-between items-center">
-                                    <div><p class="font-bold text-gray-800 text-lg">${safeName}</p><p class="text-xs text-gray-500"><i class="far fa-clock"></i> ${safeDate}</p></div>
-                                    <div class="bg-green-100 text-green-600 w-8 h-8 rounded-full flex justify-center items-center"><i class="fas fa-chevron-down"></i></div>
-                                </div>
-                                <div id="res-det-${comp.ticketId}" class="hidden mt-4 border-t border-gray-100 pt-4">
-                                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 text-sm text-gray-700 font-medium mb-3 shadow-inner"><span class="text-xs text-red-500 font-bold block mb-1">গ্রাহকের সমস্যা:</span>"${safeIssue}"</div>
-                                    <div class="bg-green-50 p-3 rounded-xl border border-green-100 text-sm text-green-800 font-bold mb-4 shadow-inner"><span class="text-xs text-green-600 font-bold block mb-1">আপনার রিপ্লাই:</span>"${safeReply}"</div>
-                                    <button onclick="event.stopPropagation(); deleteComplaint('${comp.ticketId}')" class="w-full bg-red-50 hover:bg-red-500 hover:text-white text-red-600 py-3 rounded-xl font-bold border border-red-200 transition shadow-sm"><i class="fas fa-trash-alt mr-1"></i> অভিযোগটি মুছে ফেলুন</button>
-                                </div>
-                            </div>`;
-                    });
-                } else { cnt.innerHTML = `<p class="text-center text-gray-400 py-10 font-bold">কোনো সমাধানকৃত অভিযোগ নেই</p>`; }
+                    snap.forEach(ch => resolvedComplaintsData.push(ch.val()));
+                    resolvedComplaintsData.reverse();
+                }
+                filterResolvedComplaints();
+            });
+        }
+
+        function filterResolvedComplaints() {
+            let filterDate = document.getElementById('res-filter-date').value;
+            let searchText = document.getElementById('res-search-text').value.toLowerCase();
+            let cnt = document.getElementById('resolved-complaints-container');
+            cnt.innerHTML = '';
+            
+            let filtered = resolvedComplaintsData.filter(comp => {
+                let matchSearch = (comp.name && comp.name.toLowerCase().includes(searchText)) || (comp.userId && comp.userId.toLowerCase().includes(searchText));
+                let matchDate = true;
+                
+                if (filterDate) {
+                    let ts = parseInt(comp.ticketId.replace('T-', ''));
+                    let compDateObj = new Date(ts);
+                    let compD = compDateObj.getFullYear() + "-" + String(compDateObj.getMonth()+1).padStart(2,'0') + "-" + String(compDateObj.getDate()).padStart(2,'0');
+                    matchDate = (compD === filterDate);
+                }
+                return matchSearch && matchDate;
+            });
+
+            document.getElementById('res-total-count').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                cnt.innerHTML = `<p class="text-center text-gray-400 py-10 font-bold">কোনো সমাধানকৃত অভিযোগ নেই</p>`;
+                return;
+            }
+
+            filtered.forEach(comp => {
+                let safeIssue = comp.issue || "সমস্যা উল্লেখ নেই";
+                let safeReply = comp.adminReply || "কর্তৃপক্ষ সমস্যা সমাধান করেছেন।";
+                
+                let ts = parseInt(comp.ticketId.replace('T-', ''));
+                let timeStr = new Date(ts).toLocaleTimeString('bn-BD', {hour: '2-digit', minute:'2-digit'});
+                let dateVal = new Date(ts).toLocaleDateString('bn-BD');
+                
+                cnt.innerHTML += `
+                <div class="bg-white border border-green-200 p-4 rounded-2xl relative mb-3 shadow-sm cursor-pointer hover:shadow-md transition" onclick="toggleAcc('res-acc-${comp.ticketId}')">
+                    <button onclick="event.stopPropagation(); deleteComplaint('${comp.ticketId}')" class="absolute top-4 right-4 text-red-400 hover:text-red-600 transition"><i class="fas fa-trash text-lg"></i></button>
+                    <div>
+                        <p class="font-bold text-lg text-gray-800">${comp.name || 'অজ্ঞাত'}</p>
+                        <p class="text-xs text-gray-500 font-semibold"><i class="far fa-clock"></i> ${dateVal} &nbsp; ${timeStr}</p>
+                    </div>
+                    <div id="res-acc-${comp.ticketId}" class="hidden mt-3 pt-3 border-t border-gray-100" onclick="event.stopPropagation()">
+                        <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 text-sm text-gray-700 font-medium mb-3 shadow-inner"><span class="text-xs text-red-500 font-bold block mb-1">গ্রাহকের সমস্যা:</span>"${safeIssue}"</div>
+                        <div class="bg-green-50 p-3 rounded-xl border border-green-100 text-sm text-green-800 font-bold mb-4 shadow-inner"><span class="text-xs text-green-600 font-bold block mb-1">আপনার রিপ্লাই:</span>"${safeReply}"</div>
+                        <button onclick="event.stopPropagation(); deleteComplaint('${comp.ticketId}')" class="w-full bg-red-50 hover:bg-red-500 hover:text-white text-red-600 py-3 rounded-xl font-bold border border-red-200 transition shadow-sm"><i class="fas fa-trash-alt mr-1"></i> অভিযোগটি মুছে ফেলুন</button>
+                    </div>
+                </div>`;
             });
         }
     </script>
